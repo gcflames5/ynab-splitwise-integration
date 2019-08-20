@@ -23,9 +23,9 @@
     <dependencies>
 
         <dependency>
-            <groupId>com.github.sritejakv</groupId>
+            <groupId>com.github.gcflames5</groupId>
             <artifactId>splitwise</artifactId>
-            <version>1.0</version>
+            <version>1.1</version>
         </dependency>
 
 

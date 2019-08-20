@@ -1,9 +1,15 @@
 import config.YAMLConfiguration;
+import org.threeten.bp.LocalDate;
 import sw.Expense;
+import sw.SplitwiseHandler;
 import ynab.YNABHandler;
+import ynab.YNABTransaction;
+import ynab.client.model.BulkTransactions;
+import ynab.client.model.SaveTransaction;
 
 import java.io.FileNotFoundException;
 import java.io.IOException;
+import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 
@@ -31,23 +37,20 @@ public class Main {
         System.out.println("Authenticating YNAB...");
         YNABHandler ynab = new ynab.YNABHandler(config);
         ynab.authenticate();
-        //ynab.addTransaction(12.31, "This is a test", new Date());
 
         if (newExpenses.size() > 0) {
             Date latestDate = new Date(0);
+            List<YNABTransaction> transactions = new ArrayList<>();
+
             for (Expense expense : newExpenses) {
                 if (expense.created_at.after(latestDate)) {
                     latestDate = expense.created_at;
                 }
 
-                if (expense.description.equalsIgnoreCase("Payment") || expense.description.equalsIgnoreCase("Settle All Balances")) {
-                    System.out.println("Ignoring settle up expense: " + expense.toString());
-                    continue;
-                }
-
                 System.out.println("New expense found: " + expense.toString());
-                ynab.addTransaction(expense.cost, expense.description, expense.created_at);
+                transactions.add(new YNABTransaction(expense.description, expense.description, expense.cost, expense.created_at));
             }
+            ynab.addTransactions(transactions);
             config.setSplitwiseLastTransactionDate(latestDate);
         }
 

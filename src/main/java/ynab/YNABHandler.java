@@ -13,7 +13,9 @@ import ynab.client.model.*;
 
 import java.math.BigDecimal;
 import java.text.SimpleDateFormat;
+import java.util.ArrayList;
 import java.util.Date;
+import java.util.List;
 import java.util.UUID;
 
 
@@ -79,6 +81,35 @@ public class YNABHandler {
 
         } catch (ApiException e) {
             System.err.println("Exception raised when authenticating!");
+            e.printStackTrace();
+        }
+
+    }
+
+    public void addTransactions(List<YNABTransaction> transactions) {
+
+        List<SaveTransaction> saveTransactionList = new ArrayList<>();
+        for (YNABTransaction transaction : transactions) {
+            SaveTransaction saveTransaction = new SaveTransaction();
+            saveTransaction.setAccountId(this.accountUUID);
+            saveTransaction.setMemo(transaction.desc);
+            saveTransaction.setAmount(new BigDecimal(transaction.cost * 1000));
+            SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd");
+            saveTransaction.setDate(LocalDate.parse(dateFormat.format(transaction.date)));
+            saveTransaction.setApproved(false);
+            saveTransactionList.add(saveTransaction);
+        }
+
+        try {
+            BulkTransactions bulkTransactions = new BulkTransactions();
+            bulkTransactions.setTransactions(saveTransactionList);
+            transactionsApi.bulkCreateTransactions(this.budgetUUID, bulkTransactions);
+
+            // FIXME: Bulk create doesn't seem to work, use regular creates instead
+            //for (SaveTransaction transaction : saveTransactionList) {
+            //    transactionsApi.createTransaction(this.budgetUUID, new SaveTransactionWrapper().transaction(transaction));
+            //}
+        } catch (Exception e) {
             e.printStackTrace();
         }
 

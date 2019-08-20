@@ -1,22 +1,24 @@
+package sw;
+
 import com.github.scribejava.core.model.OAuth1AccessToken;
 import config.YAMLConfiguration;
 import org.json.JSONArray;
 import org.json.JSONObject;
-import sw.Expense;
+import splitwise.Splitwise;
 
 import java.io.*;
 import java.util.*;
 
 public class SplitwiseHandler {
 
-    /*public static void main(String[] args) throws FileNotFoundException {
+    public static void main(String[] args) throws FileNotFoundException {
         YAMLConfiguration configuration = new YAMLConfiguration("config.yml");
         configuration.openConfig();
         SplitwiseHandler sw = new SplitwiseHandler(configuration);
         sw.authenticate();
-        List<sw.Expense> newExpenses = sw.getNewExpenses();
+        List<sw.Expense> newExpenses = sw.getAllExpenses();
         System.out.println(newExpenses);
-    }*/
+    }
 
     private Splitwise splitwise;
     private String consumerSecret, consumerKey, oauthTokenFilePath;
@@ -89,7 +91,7 @@ public class SplitwiseHandler {
         System.out.println("Fetching user");
         String expensesJSON = null;
         try {
-            expensesJSON = splitwise.getExpenses();
+            expensesJSON = splitwise.getExpenses(0);
         } catch (Exception e) {
             e.printStackTrace();
         }

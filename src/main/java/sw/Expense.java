@@ -36,8 +36,8 @@ public class Expense {
         } catch (ParseException e) {
             e.printStackTrace();
         }
-        double cost = 0;
 
+        double cost = 0;
 
         if (!obj.get("deleted_by").toString().equalsIgnoreCase("null")) {
             return null;
@@ -47,12 +47,24 @@ public class Expense {
         for (Object repaymentObj : repayments) {
             JSONObject JSONRepaymentObj = (JSONObject) repaymentObj;
             long toUserID = JSONRepaymentObj.getLong("to");
+            long fromUSerID = JSONRepaymentObj.getLong("from");
+
+            // Check if user is involved in the transaction at all
+            if (toUserID != userID && fromUSerID != userID) {
+                continue;
+            }
+
+            // User is involved, decide whether they are giving or receiving money
             double amount = JSONRepaymentObj.getDouble("amount");
             if (toUserID == userID) {
                 cost += amount;
             } else {
                 cost -= amount;
             }
+        }
+
+        if (cost == 0) {
+            return null;
         }
 
         return new Expense(id, 0, desc, paid, cost, created_at);
