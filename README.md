@@ -9,6 +9,25 @@ This integration treats your Splitwise balance as an actual account balance to h
 Using the Integration
 ----
 
+### How I Use This Tool
+The tool creates transactions in YNAB for every transaction in Splitwise. I categorize each Splitwise transaction into a budget category in order to track actual spending. Then, the settle up transactions (both on the Splitwise side and the actual payment method used to fulfill the settle up) are categorized into "To Be Budgeted," which effectively ignores them in the budget but keeps the account balances correct. Here's an example to illustrate the methodology:
+
+1. I lend Alice $25.00 for "Eating Out" (total charge: $50.00 on credit card)
+2. Bob lends me $45.00 for "Household Goods"
+3. I use Splitwise's debt simplification feature to pay Bob $20.00 directly
+
+Here's what those transactions would look like in Splitwise: 
+
+| Account     | Transaction              |  Category       | Inflow |  Outflow |
+| ----------- | ------------------------ | --------------- | ------ | -------- |
+| Splitwise   | Eating Out (w/ Alice)    | Eating Out      | $25    |          |
+| Credit Card | Eating Out (w/ Alice)    | Eating Out      |        | $50      |
+| Splitwise   | Household Goods (w/ Bob) | Household Goods |        | $45      |
+| Splitwise   | Settle up                | To Be Budgeted  | $20    |          |
+| Venmo       | Settle up                | To Be Budgeted  |        | $20      | 
+
+The two settle up transactions cancel out (while still correclty updating their accounts' balances) but don't affect our budget. The Splitwise and Credit Card transactions total $25 spent on Eating Out, which is the $50 from the credit card minus the $25 reimbursement from Alice, keeping our budget correct.
+
 ### Configuration
 
 Create a file called `config.yml` in the same directory as the .jar file with the following contents:
