@@ -38,6 +38,7 @@ public class SplitwiseHandler {
         // Check if authentication file exists
         File oauth_token_file = new File(this.oauthTokenFilePath);
         if (!oauth_token_file.exists()) {
+            System.out.println(oauth_token_file.getAbsolutePath());
             doNewAuthorization();
             authenticate();
         }
@@ -131,15 +132,15 @@ public class SplitwiseHandler {
 
     private void writeAccessToken(OAuth1AccessToken token) throws IOException {
         String token_string = toString(token);
-        File f = new File("splitwise_token.oauth");
+        File f = new File(this.oauthTokenFilePath);
         if (f.exists()) f.delete();
-        PrintWriter out = new PrintWriter("splitwise_token.oauth");
+        PrintWriter out = new PrintWriter(this.oauthTokenFilePath);
         out.print(token_string);
         out.close();
     }
 
     private OAuth1AccessToken readAccessToken() throws IOException, ClassNotFoundException {
-        BufferedReader br = new BufferedReader(new FileReader("splitwise_token.oauth"));
+        BufferedReader br = new BufferedReader(new FileReader(this.oauthTokenFilePath));
         String token_string = br.readLine();
         return (OAuth1AccessToken) fromString(token_string);
     }

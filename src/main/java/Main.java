@@ -1,12 +1,10 @@
 import config.YAMLConfiguration;
-import org.threeten.bp.LocalDate;
 import sw.Expense;
 import sw.SplitwiseHandler;
 import ynab.YNABHandler;
 import ynab.YNABTransaction;
-import ynab.client.model.BulkTransactions;
-import ynab.client.model.SaveTransaction;
 
+import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.util.ArrayList;
@@ -15,11 +13,21 @@ import java.util.List;
 
 public class Main {
 
+    public static String configPath = "<UNSPECIFIED>";
+
     public static void main(String[] args) {
+
+        if (args.length <= 0) {
+            System.out.println("Please specify the path of the config file as a command line argument!");
+            System.exit(0);
+        }
+        configPath = args[0];
 
         // Read Config
         System.out.println("Reading configuration...");
-        YAMLConfiguration config = new YAMLConfiguration("config.yml");
+        File f = new File(configPath);
+        System.out.println(f.exists());
+        YAMLConfiguration config = new YAMLConfiguration(configPath);
         try {
             config.openConfig();
         } catch (FileNotFoundException e) {
@@ -40,7 +48,7 @@ public class Main {
 
         if (newExpenses.size() > 0) {
             Date latestDate = new Date(0);
-            List<YNABTransaction> transactions = new ArrayList<>();
+            List<YNABTransaction> transactions = new ArrayList<YNABTransaction>();
 
             for (Expense expense : newExpenses) {
                 if (expense.created_at.after(latestDate)) {
@@ -62,7 +70,7 @@ public class Main {
         }
 
         System.out.println("Exiting...");
-
+        System.exit(0);
     }
 
 }

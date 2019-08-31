@@ -104,11 +104,6 @@ public class YNABHandler {
             BulkTransactions bulkTransactions = new BulkTransactions();
             bulkTransactions.setTransactions(saveTransactionList);
             transactionsApi.bulkCreateTransactions(this.budgetUUID, bulkTransactions);
-
-            // FIXME: Bulk create doesn't seem to work, use regular creates instead
-            //for (SaveTransaction transaction : saveTransactionList) {
-            //    transactionsApi.createTransaction(this.budgetUUID, new SaveTransactionWrapper().transaction(transaction));
-            //}
         } catch (Exception e) {
             e.printStackTrace();
         }
