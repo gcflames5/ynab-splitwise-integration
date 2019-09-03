@@ -1,6 +1,7 @@
-package ynab;
+package com.github.gclfames5.ynab;
 
-import config.YAMLConfiguration;
+import com.github.gclfames5.config.YAMLConfiguration;
+import org.threeten.bp.DateTimeUtils;
 import org.threeten.bp.LocalDate;
 import ynab.client.api.AccountsApi;
 import ynab.client.api.BudgetsApi;
@@ -22,9 +23,9 @@ import java.util.UUID;
 public class YNABHandler {
 
     /*public static void main(String[] args) throws FileNotFoundException {
-        YAMLConfiguration config = new YAMLConfiguration("config.yml");
-        config.openConfig();
-        ynab.YNABHandler ynab = new ynab.YNABHandler(config);
+        YAMLConfiguration com.github.gclfames5.config = new YAMLConfiguration("com.github.gclfames5.config.yml");
+        com.github.gclfames5.config.openConfig();
+        ynab.YNABHandler ynab = new ynab.YNABHandler(com.github.gclfames5.config);
         ynab.authenticate();
         ynab.addTransaction(12.31, "This is a test", new Date());
     }*/
@@ -33,7 +34,7 @@ public class YNABHandler {
     private String accountName;
     private String accessToken;
 
-    private  ApiClient defaultClient;
+    private ApiClient defaultClient;
     private BudgetsApi budgetsApi;
     private TransactionsApi transactionsApi;
     private AccountsApi accountsApi;
@@ -51,7 +52,7 @@ public class YNABHandler {
     public void authenticate() {
         // Configure API key authorization: bearer
         ApiKeyAuth bearer = (ApiKeyAuth) defaultClient.getAuthentication("bearer");
-        bearer.setApiKey("64698c3d17e4d54209698d690a0f9522ec1eda94200ccbfcbcec0c5bd298efa2 ");
+        bearer.setApiKey(this.accessToken);
         bearer.setApiKeyPrefix("Bearer");
 
         // Initialize API objects
@@ -86,18 +87,22 @@ public class YNABHandler {
 
     }
 
+    public SaveTransaction toSaveTransaction(YNABTransaction transaction) {
+        SaveTransaction saveTransaction = new SaveTransaction();
+        saveTransaction.setAccountId(this.accountUUID);
+        saveTransaction.setMemo(transaction.desc);
+        saveTransaction.setAmount(new BigDecimal(transaction.cost * 1000));
+        SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd");
+        saveTransaction.setDate(LocalDate.parse(dateFormat.format(transaction.date)));
+        saveTransaction.setApproved(false);
+        return saveTransaction;
+    }
+
     public void addTransactions(List<YNABTransaction> transactions) {
 
         List<SaveTransaction> saveTransactionList = new ArrayList<>();
         for (YNABTransaction transaction : transactions) {
-            SaveTransaction saveTransaction = new SaveTransaction();
-            saveTransaction.setAccountId(this.accountUUID);
-            saveTransaction.setMemo(transaction.desc);
-            saveTransaction.setAmount(new BigDecimal(transaction.cost * 1000));
-            SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd");
-            saveTransaction.setDate(LocalDate.parse(dateFormat.format(transaction.date)));
-            saveTransaction.setApproved(false);
-            saveTransactionList.add(saveTransaction);
+            saveTransactionList.add(toSaveTransaction(transaction));
         }
 
         try {
@@ -123,7 +128,28 @@ public class YNABHandler {
         } catch (ApiException e) {
             e.printStackTrace();
         }
+    }
 
+    public List<TransactionDetail> getTransactionsSince(Date since) {
+        try {
+            LocalDate localDate = DateTimeUtils.toLocalDate(new java.sql.Date(since.getTime()));
+            TransactionsResponse transactionsResponse
+                    = this.transactionsApi.getTransactionsByAccount(this.budgetUUID, this.accountUUID, localDate);
+            //= this.transactionsApi.getTransactions(this.budgetUUID, localDate, "");
+            return transactionsResponse.getData().getTransactions();
+        } catch (ApiException e) {
+            e.printStackTrace();
+        }
+        return null;
+    }
+
+    public void updateTransaction(UUID transactionUUID, SaveTransaction saveTransaction) {
+        try {
+            this.transactionsApi.updateTransaction(budgetUUID, transactionUUID, new SaveTransactionWrapper().transaction(saveTransaction));
+        } catch (ApiException e) {
+
+            e.printStackTrace();
+        }
     }
 
 

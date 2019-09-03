@@ -1,4 +1,4 @@
-package config;
+package com.github.gclfames5.config;
 
 import org.yaml.snakeyaml.DumperOptions;
 import org.yaml.snakeyaml.Yaml;
@@ -13,7 +13,7 @@ import java.util.Map;
 public class YAMLConfiguration {
 
     public static void main(String[] args) throws IOException {
-        YAMLConfiguration yamlConfiguration = new YAMLConfiguration("config.yml");
+        YAMLConfiguration yamlConfiguration = new YAMLConfiguration("com.github.gclfames5.config.yml");
         yamlConfiguration.openConfig();
         yamlConfiguration.setSplitwiseLastTransactionDate(new Date());
         yamlConfiguration.writeConfig();

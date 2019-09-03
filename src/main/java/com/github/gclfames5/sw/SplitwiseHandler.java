@@ -1,10 +1,10 @@
-package sw;
+package com.github.gclfames5.sw;
 
 import com.github.scribejava.core.model.OAuth1AccessToken;
-import config.YAMLConfiguration;
 import org.json.JSONArray;
 import org.json.JSONObject;
 import splitwise.Splitwise;
+import com.github.gclfames5.config.YAMLConfiguration;
 
 import java.io.*;
 import java.util.*;
@@ -12,11 +12,11 @@ import java.util.*;
 public class SplitwiseHandler {
 
     public static void main(String[] args) throws FileNotFoundException {
-        YAMLConfiguration configuration = new YAMLConfiguration("config.yml");
+        YAMLConfiguration configuration = new YAMLConfiguration("com.github.gclfames5.config.yml");
         configuration.openConfig();
         SplitwiseHandler sw = new SplitwiseHandler(configuration);
         sw.authenticate();
-        List<sw.Expense> newExpenses = sw.getAllExpenses();
+        List<SplitwiseExpense> newExpenses = sw.getAllExpenses(0, null);
         System.out.println(newExpenses);
     }
 
@@ -38,7 +38,6 @@ public class SplitwiseHandler {
         // Check if authentication file exists
         File oauth_token_file = new File(this.oauthTokenFilePath);
         if (!oauth_token_file.exists()) {
-            System.out.println(oauth_token_file.getAbsolutePath());
             doNewAuthorization();
             authenticate();
         }
@@ -75,9 +74,6 @@ public class SplitwiseHandler {
             System.out.println("Please paste your oauth verifier here:");
             String oauth_verifier = scan.nextLine().replaceAll("\n", "").trim();
 
-            //System.out.println("Please paste your oauth token here:");
-            //String oauth_token = scan.nextLine().replaceAll("\n", "").trim();
-
             splitwise.util.setAccessToken(oauth_verifier);
 
             OAuth1AccessToken accessToken = (OAuth1AccessToken) splitwise.util.getAccessToken();
@@ -88,45 +84,32 @@ public class SplitwiseHandler {
         }
     }
 
-    public List<Expense> getAllExpenses() {
-        System.out.println("Fetching user");
+    public List<SplitwiseExpense> getAllExpenses(int limit, Date updated_after) {
         String expensesJSON = null;
         try {
-            expensesJSON = splitwise.getExpenses(0);
+            if (updated_after != null) {
+                expensesJSON = splitwise.getExpenses(limit, updated_after);
+            } else {
+                expensesJSON = splitwise.getExpenses(limit);
+            }
         } catch (Exception e) {
             e.printStackTrace();
         }
 
-        List<Expense> expenses = new ArrayList<Expense>();
+        List<SplitwiseExpense> expenses = new ArrayList<SplitwiseExpense>();
         JSONObject obj = new JSONObject(expensesJSON);
         JSONArray expenseArray = (JSONArray) obj.get("expenses");
 
         for (Object expenseObj : expenseArray) {
             JSONObject jsonExpenseObj = (JSONObject) expenseObj;
-            Expense expense = Expense.parseJSON(jsonExpenseObj, this.userID);
+            SplitwiseExpense expense = SplitwiseExpense.parseJSON(jsonExpenseObj, this.userID);
             if (expense != null) {
                 expenses.add(expense);
-                //System.out.println(expense);
             }
-
         }
 
         return expenses;
     }
-
-    public List<Expense> getNewExpenses() {
-        List<Expense> newExpenses = new ArrayList<>();
-        List<Expense> allExpenses = getAllExpenses();
-
-        for (Expense e : allExpenses) {
-            if (e.created_at.after(this.lastTransactionDate))
-                newExpenses.add(e);
-        }
-
-        return newExpenses;
-    }
-
-
 
     /* Token Utilities */
 

@@ -1,4 +1,4 @@
-package ynab;
+package com.github.gclfames5.ynab;
 
 import java.util.Date;
 
