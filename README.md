@@ -30,6 +30,8 @@ The two settle up transactions cancel out (while still correclty updating their 
 
 ### Configuration
 
+Before you begin, you will need to register an application with the Splitwise API and obtain an access token from YNAB. First [click this link](https://secure.splitwise.com/apps) to register your application with Splitwise. After registering, keep the "Consumer Key" and "Consumer Secret" on hand for later. Next, we need an access token fron YNAB. Once in YNAB, click "My Account" and scroll down to the developer settings, or [click here](https://app.youneedabudget.com/settings/developer) to go directly there. After registering for an access token, copy it down for the next step.
+
 Create a file called `config.yml` in the same directory as the .jar file with the following contents:
 
 ```yaml
@@ -44,7 +46,7 @@ ynab:
   account_name: Splitwise # Name of the account where Splitwise transactions will be added
 ```
 
-In order to populate the configuration fields, you'll need to register an application with the Splitwise API in order to obtain a consumer key and secret pair, and request a personal access token from YNAB. 
+Replace <consumer_key> and <consumer_secret> with the two values you obtained from Splitwise. Replace <personal_access_token> with the token you obtained from YNAB.
 
 #### Authorizing
 
@@ -52,6 +54,8 @@ In order to authorize the Splitwise app, you'll need to click the authorization 
 
 ### Running the Integration
 Running the integration will transfer any new transactions from Splitwise to YNAB and then terminate. I suggest using cron or something like it to run the jar at regular intervals.
+
+After fetching the latest jar from the releases page, you can run the jar with the following command: `java -jar ynab-splitwise.jar`, ensure that java is installed on your machine. It will assume that your config.yml file is located in the same directory as the jar, if it is not, specify the full path of the config file as the first command line argument.
 
 ### Dependencies
 Most dependencies will be imported via Maven and specified in the project's `pom.xml`. However, you will need to manually install [this repository](https://github.com/gcflames5/ynab-sdk) in your local maven repository by following the instlalation steps in its README.md.
