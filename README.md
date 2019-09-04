@@ -2,6 +2,8 @@ Splitwise Integration for YNAB
 ====
 Splitwise poses an interesting problem for YNAB, where a single settle up transaction can represent a lot of other transactions rolled into one. This makes it extremely hard to budget Splitwise transactions using YNAB. This integration solves that problem by importing Splitwise transactions into YNAB, allowing you to categorize the transactions within YNAB.
 
+A step by step tutorial can be found [on the wiki](https://github.com/gcflames5/ynab-splitwise-integration/wiki/Step-By-Step-Tutorial).
+
 Word of Caution
 ----
 This integration treats your Splitwise balance as an actual account balance to help categorize expenses, but be carefull about treating these items as reimbursed before they actually are. If you are not mindful, you may be relying on money that has not yet been returned to you.
