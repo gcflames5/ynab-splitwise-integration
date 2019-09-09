@@ -60,4 +60,6 @@ Running the integration will transfer any new transactions from Splitwise to YNA
 After fetching the latest jar from the releases page, you can run the jar with the following command: `java -jar ynab-splitwise.jar`, ensure that java is installed on your machine. It will assume that your config.yml file is located in the same directory as the jar, if it is not, specify the full path of the config file as the first command line argument.
 
 ### Dependencies
-Most dependencies will be imported via Maven and specified in the project's `pom.xml`. However, you will need to manually install [this repository](https://github.com/gcflames5/ynab-sdk) in your local maven repository by following the instlalation steps in its README.md.
+Most dependencies will be imported via Maven and specified in the project's `pom.xml`. However, you will need to manually install the following repositories in your local maven repository by following the installation steps in their README.mds.
+ - [Java YNAB SDK](https://github.com/gcflames5/ynab-sdk)
+ - [Java Splitwise API](https://github.com/gcflames5/splitwise-java)
