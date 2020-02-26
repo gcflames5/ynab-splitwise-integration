@@ -1,5 +1,6 @@
 package com.github.gclfames5.sw;
 
+import com.github.gclfames5.log.Logger;
 import org.json.JSONArray;
 import org.json.JSONObject;
 
@@ -43,7 +44,7 @@ public class SplitwiseExpense {
                 deleted_at = simpleDateFormat.parse(obj.getString("deleted_at").replaceAll("T", " ").replaceAll("Z", " ").trim());
             }
         } catch (ParseException e) {
-            e.printStackTrace();
+            Logger.log(e);
         }
 
         double cost = 0;
@@ -76,7 +77,9 @@ public class SplitwiseExpense {
             return null;
         }
 
-        return new SplitwiseExpense(id, 0, desc, paid, cost, created_at, updated_on, deleted_at);
+        SplitwiseExpense expense = new SplitwiseExpense(id, 0, desc, paid, cost, created_at, updated_on, deleted_at);
+        Logger.log(String.format("Parsed splitwise expense: %s", expense.toString()));
+        return expense;
     }
 
     @Override

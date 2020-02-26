@@ -1,5 +1,6 @@
 package com.github.gclfames5.sw;
 
+import com.github.gclfames5.log.Logger;
 import com.github.scribejava.core.model.OAuth1AccessToken;
 import org.json.JSONArray;
 import org.json.JSONObject;
@@ -54,9 +55,9 @@ public class SplitwiseHandler {
             this.userID = JSONUser.getLong("id");
 
         } catch (Exception e) {
-            e.printStackTrace();
+            Logger.log(e);
 
-            System.out.println("Login failed! Starting authorization process...");
+            Logger.log("Login failed! Starting authorization process...", true);
             // Try again?
             oauth_token_file.delete();
             doNewAuthorization();
@@ -80,7 +81,7 @@ public class SplitwiseHandler {
 
             writeAccessToken(accessToken);
         }catch (Exception e) {
-            e.printStackTrace();
+            Logger.log(e);
         }
     }
 
@@ -93,7 +94,7 @@ public class SplitwiseHandler {
                 expensesJSON = splitwise.getExpenses(limit);
             }
         } catch (Exception e) {
-            e.printStackTrace();
+            Logger.log(e);
         }
 
         List<SplitwiseExpense> expenses = new ArrayList<SplitwiseExpense>();

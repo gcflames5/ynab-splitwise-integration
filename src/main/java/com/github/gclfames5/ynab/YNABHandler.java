@@ -1,6 +1,7 @@
 package com.github.gclfames5.ynab;
 
 import com.github.gclfames5.config.YAMLConfiguration;
+import com.github.gclfames5.log.Logger;
 import org.threeten.bp.DateTimeUtils;
 import org.threeten.bp.LocalDate;
 import ynab.client.api.AccountsApi;
@@ -19,16 +20,7 @@ import java.util.Date;
 import java.util.List;
 import java.util.UUID;
 
-
 public class YNABHandler {
-
-    /*public static void main(String[] args) throws FileNotFoundException {
-        YAMLConfiguration com.github.gclfames5.config = new YAMLConfiguration("com.github.gclfames5.config.yml");
-        com.github.gclfames5.config.openConfig();
-        ynab.YNABHandler ynab = new ynab.YNABHandler(com.github.gclfames5.config);
-        ynab.authenticate();
-        ynab.addTransaction(12.31, "This is a test", new Date());
-    }*/
 
     private String budgetName;
     private String accountName;
@@ -81,36 +73,8 @@ public class YNABHandler {
             if  (this.accountUUID == null) throw new RuntimeException("No'" + accountName +  "' account found in YNAB!");
 
         } catch (ApiException e) {
-            System.err.println("Exception raised when authenticating!");
-            e.printStackTrace();
-        }
-
-    }
-
-    public SaveTransaction toSaveTransaction(YNABTransaction transaction) {
-        SaveTransaction saveTransaction = new SaveTransaction();
-        saveTransaction.setAccountId(this.accountUUID);
-        saveTransaction.setMemo(transaction.desc);
-        saveTransaction.setAmount(new BigDecimal(transaction.cost * 1000));
-        SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd");
-        saveTransaction.setDate(LocalDate.parse(dateFormat.format(transaction.date)));
-        saveTransaction.setApproved(false);
-        return saveTransaction;
-    }
-
-    public void addTransactions(List<YNABTransaction> transactions) {
-
-        List<SaveTransaction> saveTransactionList = new ArrayList<>();
-        for (YNABTransaction transaction : transactions) {
-            saveTransactionList.add(toSaveTransaction(transaction));
-        }
-
-        try {
-            BulkTransactions bulkTransactions = new BulkTransactions();
-            bulkTransactions.setTransactions(saveTransactionList);
-            transactionsApi.bulkCreateTransactions(this.budgetUUID, bulkTransactions);
-        } catch (Exception e) {
-            e.printStackTrace();
+            Logger.log("Exception raised when authenticating!");
+            Logger.log(e);
         }
 
     }
@@ -126,7 +90,7 @@ public class YNABHandler {
             transaction.setMemo(description);
             transactionsApi.createTransaction(this.budgetUUID, new SaveTransactionWrapper().transaction(transaction));
         } catch (ApiException e) {
-            e.printStackTrace();
+            Logger.log(e);
         }
     }
 
@@ -135,10 +99,9 @@ public class YNABHandler {
             LocalDate localDate = DateTimeUtils.toLocalDate(new java.sql.Date(since.getTime()));
             TransactionsResponse transactionsResponse
                     = this.transactionsApi.getTransactionsByAccount(this.budgetUUID, this.accountUUID, localDate);
-            //= this.transactionsApi.getTransactions(this.budgetUUID, localDate, "");
             return transactionsResponse.getData().getTransactions();
         } catch (ApiException e) {
-            e.printStackTrace();
+            Logger.log(e);
         }
         return null;
     }
@@ -147,8 +110,7 @@ public class YNABHandler {
         try {
             this.transactionsApi.updateTransaction(budgetUUID, transactionUUID, new SaveTransactionWrapper().transaction(saveTransaction));
         } catch (ApiException e) {
-
-            e.printStackTrace();
+            Logger.log(e);
         }
     }
 
