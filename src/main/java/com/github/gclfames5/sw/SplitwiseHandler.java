@@ -16,7 +16,7 @@ public class SplitwiseHandler {
         YAMLConfiguration configuration = new YAMLConfiguration("com.github.gclfames5.config.yml");
         configuration.openConfig();
         SplitwiseHandler sw = new SplitwiseHandler(configuration);
-        sw.authenticate();
+        sw.authenticate(true);
         List<SplitwiseExpense> newExpenses = sw.getAllExpenses(0, null);
         System.out.println(newExpenses);
     }
@@ -35,12 +35,12 @@ public class SplitwiseHandler {
         this.splitwise = new Splitwise(this.consumerKey, this.consumerSecret);
     }
 
-    public void authenticate() {
+    public void authenticate(boolean first_try) {
         // Check if authentication file exists
         File oauth_token_file = new File(this.oauthTokenFilePath);
-        if (!oauth_token_file.exists()) {
+        if (!oauth_token_file.exists() && first_try) {
             doNewAuthorization();
-            authenticate();
+            authenticate(false);
         }
 
         // OAuth Token should now exist
@@ -58,10 +58,13 @@ public class SplitwiseHandler {
             Logger.log(e);
 
             Logger.log("Login failed! Starting authorization process...", true);
-            // Try again?
-            oauth_token_file.delete();
-            doNewAuthorization();
-            authenticate();
+
+            // Try again once
+            if (first_try) {
+                oauth_token_file.delete();
+                doNewAuthorization();
+                authenticate(false);
+            }
         }
     }
 

@@ -59,7 +59,7 @@ public class Main {
         // Authenticate Splitwise
         Logger.log("Authenticating Splitwise...", true);
         SplitwiseHandler sw = new SplitwiseHandler(config);
-        sw.authenticate();
+        sw.authenticate(true);
         Logger.log(String.format("Fetching spltiwise transactions since %s", config.getSplitwiseLastTransactionDate().toString()), true);
         List<SplitwiseExpense> expensesToProcess = sw.getAllExpenses(0, config.getSplitwiseLastTransactionDate());
 
